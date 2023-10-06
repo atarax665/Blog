@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SSE Client</title>
+</head>
+<body>
+    <h1>SSE Client</h1>
+    <div id="sse-data"></div>
+
+    <script>
+        const sseDataElement = document.getElementById("sse-data");
+
+        // Create an EventSource to listen to the /sse endpoint
+        const eventSource = new EventSource("http://localhost:3000/sse");
+
+        // Event listener for messages received from the server
+        eventSource.onmessage = function(event) {
+            const data = event.data;
+            appendDataToDiv(data);
+        };
+
+        // Event listener for SSE errors
+        eventSource.onerror = function(event) {
+            console.error("SSE Error:", event);
+        };
+
+        // Function to append data to the SSE data div
+        function appendDataToDiv(data) {
+            const p = document.createElement("p");
+            p.textContent = data;
+            sseDataElement.appendChild(p);
+        }
+    </script>
+</body>
+</html>
