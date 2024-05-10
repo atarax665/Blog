@@ -1,0 +1,33 @@
+services:
+  producer:
+    build: ./producer/
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+
+  db:
+    image: postgres:15
+    env_file:
+      - .env
+    ports:
+      - "54320:5432"
+    volumes:
+      - "./db:/init_queries"
+      - "./db/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "--quiet"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+  consumer:
+    build: ./consumer/
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
